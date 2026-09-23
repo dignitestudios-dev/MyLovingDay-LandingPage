@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "U8G66CMRM4.com.cts.lovingday",
+        "paths": ["/posts/*"]
+      }
+    ]
+  }
+}
