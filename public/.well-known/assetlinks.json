@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.cts.lovingday",
+      "sha256_cert_fingerprints": [
+        "E8:0C:30:1D:4A:5A:61:02:C3:37:38:A0:F7:95:C9:3F:D7:19:3C:D4:3A:76:CE:12:30:8F:52:64:43:4C:B3:86"
+      ]
+    }
+  }
+]
