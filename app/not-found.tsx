@@ -17,7 +17,7 @@ export default function NotFound() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '140px 20px 60px 20px',
+        padding: '210px 20px 60px 20px',
         position: 'relative',
         overflow: 'hidden',
       }}

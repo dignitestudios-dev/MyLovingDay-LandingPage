@@ -9,10 +9,11 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <div
+      className="legal-page-wrapper"
       style={{
         backgroundColor: '#ffffff',
         minHeight: '100vh',
-        paddingTop: '160px',
+        paddingTop: '200px',
         paddingBottom: '80px',
       }}
     >
@@ -21,8 +22,8 @@ export default function PrivacyPolicyPage() {
         <div style={{ marginBottom: '40px' }}>
           <h1
             style={{
-              fontSize: '48px',
-              fontWeight: 900,
+              fontSize: 'clamp(32px, 5vw, 48px)',
+              fontWeight: 800,
               color: '#000000',
               marginBottom: '16px',
             }}
@@ -156,34 +157,6 @@ export default function PrivacyPolicyPage() {
           </p>
         </div>
       </div>
-
-      <style jsx>{`
-        .policy-section {
-          margin-bottom: 36px;
-        }
-        .policy-section h2 {
-          font-size: 26px;
-          font-weight: 800;
-          color: #024ba4;
-          margin-bottom: 14px;
-        }
-        .policy-section p {
-          font-size: 16px;
-          color: #334155;
-          line-height: 1.75;
-          margin-bottom: 14px;
-        }
-        .policy-section ul {
-          padding-left: 24px;
-          margin-bottom: 16px;
-        }
-        .policy-section li {
-          font-size: 16px;
-          color: #334155;
-          line-height: 1.7;
-          margin-bottom: 8px;
-        }
-      `}</style>
     </div>
   );
 }

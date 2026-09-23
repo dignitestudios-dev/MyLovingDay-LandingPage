@@ -2,7 +2,6 @@
 
 import React from 'react';
 import ScrollReveal from './ScrollReveal';
-import { Sparkles } from 'lucide-react';
 
 export default function Hero() {
   return (
@@ -65,7 +64,6 @@ export default function Hero() {
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
             }}
           >
-            <Sparkles size={15} color="#00D2FF" />
             Next-Gen Digital Legacy Vault
           </div>
         </ScrollReveal>

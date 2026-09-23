@@ -24,6 +24,7 @@ export default function Header() {
       }}
     >
       <div
+        className="header-container"
         style={{
           maxWidth: '1440px',
           margin: '0 auto',
@@ -87,6 +88,7 @@ export default function Header() {
 
         {/* Center Logo Emblem - Hanging Badge Card */}
         <div
+          className="header-logo-wrapper"
           style={{
             zIndex: 60,
             display: 'flex',
@@ -94,29 +96,12 @@ export default function Header() {
           }}
         >
           <Link href="/" style={{ display: 'inline-block' }}>
-            <div
-              style={{
-                backgroundColor: '#ffffff',
-                borderRadius: '0 0 16px 16px',
-                padding: '12px 28px 14px 28px',
-                boxShadow: '0px 20px 40px rgba(0, 0, 0, 0.28)',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              className="logo-card"
-            >
+            <div className="logo-card">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://mylovingday.com/wp-content/uploads/2025/01/Logo-mn-300x260.png"
                 alt="My Loving Day"
-                style={{
-                  width: '140px',
-                  height: 'auto',
-                  display: 'block',
-                  transition: 'all 0.3s ease',
-                }}
+                className="header-logo-img"
               />
             </div>
           </Link>
@@ -299,15 +284,49 @@ export default function Header() {
           color: #00d2ff !important;
           transform: translateY(-2px);
         }
+        .logo-card {
+          background-color: #ffffff;
+          border-radius: 0 0 16px 16px;
+          padding: 8px 24px 10px 24px;
+          box-shadow: 0px 14px 30px rgba(0, 0, 0, 0.22);
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
         .logo-card:hover {
           transform: translateY(2px) scale(1.02);
         }
+        .header-logo-img {
+          width: 105px;
+          height: auto;
+          display: block;
+          transition: all 0.3s ease;
+        }
         @media (max-width: 991px) {
+          .header-container {
+            padding: 0 16px !important;
+            align-items: center !important;
+            min-height: 64px;
+          }
           .desktop-nav {
             display: none !important;
           }
           .mobile-toggle {
             display: block !important;
+            padding-top: 0 !important;
+          }
+          .header-logo-wrapper {
+            position: relative;
+          }
+          .logo-card {
+            padding: 5px 14px 6px 14px !important;
+            border-radius: 0 0 12px 12px !important;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.16) !important;
+          }
+          .header-logo-img {
+            width: 70px !important;
+            height: auto !important;
           }
         }
       `}</style>

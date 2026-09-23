@@ -17,7 +17,23 @@ import {
   Star,
   AlertCircle,
   Home,
+  Users,
+  User,
+  Play,
+  Image as ImageIcon,
 } from 'lucide-react';
+
+// 4 official post types from mobile app:
+// static const typePost = 'post';
+// static const typeFamilyTree = 'family';
+// static const typeAlbum = 'album';
+// static const typeAngelVideo = 'angel_video';
+export const POST_TYPES = {
+  POST: 'post',
+  FAMILY: 'family',
+  ALBUM: 'album',
+  ANGEL_VIDEO: 'angel_video',
+} as const;
 
 export default function PostDetailView() {
   const params = useParams();
@@ -31,7 +47,7 @@ export default function PostDetailView() {
     searchParams.get('demo') === 'true' ||
     id === 'demo';
 
-  // Decode the `d` Base64 JSON parameter: { t: title, c: caption, i: image }
+  // Decode the `d` Base64 JSON parameter: { t: title, c: caption, i: image, ty: type }
   const { decodedData, isCorrupted } = useMemo(() => {
     if (!dParam) return { decodedData: null, isCorrupted: false };
     try {
@@ -47,7 +63,7 @@ export default function PostDetailView() {
         return { decodedData: null, isCorrupted: true };
       }
       return {
-        decodedData: parsed as { t?: string; c?: string; i?: string },
+        decodedData: parsed as { t?: string; c?: string; i?: string; ty?: string },
         isCorrupted: false,
       };
     } catch {
@@ -58,7 +74,7 @@ export default function PostDetailView() {
           return { decodedData: null, isCorrupted: true };
         }
         return {
-          decodedData: parsed as { t?: string; c?: string; i?: string },
+          decodedData: parsed as { t?: string; c?: string; i?: string; ty?: string },
           isCorrupted: false,
         };
       } catch (err) {
@@ -67,6 +83,19 @@ export default function PostDetailView() {
       }
     }
   }, [dParam]);
+
+  // Determine post type (post, family, album, angel_video)
+  const rawType = (
+    decodedData?.ty ||
+    searchParams.get('type') ||
+    searchParams.get('ty') ||
+    'post'
+  ).toLowerCase();
+
+  const isFamily = rawType === POST_TYPES.FAMILY;
+  const isAlbum = rawType === POST_TYPES.ALBUM;
+  const isAngelVideo = rawType === POST_TYPES.ANGEL_VIDEO;
+  const isPost = !isFamily && !isAlbum && !isAngelVideo;
 
   // Extract raw fields
   const rawTitle =
@@ -79,21 +108,118 @@ export default function PostDetailView() {
   const rawImage =
     decodedData?.i || searchParams.get('i') || searchParams.get('image');
 
+  // Check if valid payload
+  const hasValidPayload =
+    Boolean(rawTitle) ||
+    Boolean(rawCaption) ||
+    Boolean(rawImage) ||
+    Boolean(
+      decodedData?.ty &&
+        ['family', 'album', 'angel_video', 'post'].includes(
+          decodedData.ty.toLowerCase()
+        )
+    );
+
   // Check if post is not found (corrupted d payload, or empty data on invalid url)
   const isNotFound =
     id === '404' ||
     id === 'not-found' ||
     isCorrupted ||
-    (!isDemo && !rawTitle && !rawCaption && !rawImage);
+    (!isDemo && !hasValidPayload);
 
-  // Fallback values if demo
+  // Fallbacks & Branding metadata depending on type
+  const typeMeta = useMemo(() => {
+    if (isFamily) {
+      return {
+        badge: 'Family Tree',
+        titleFallback: 'Family Tree',
+        captionFallback:
+          'Explore your family tree lineage, generational connections, and loved ones on My Loving Day.',
+        headline: (
+          <>
+            Explore The Family Tree <br />
+            <span style={{ color: '#024BA4', fontWeight: 800 }}>
+              Preserved With Love.
+            </span>
+          </>
+        ),
+        subtitle:
+          'View interconnected generations, family tree members, and cherished relationships preserved for future generations.',
+        actionLabel: 'Open Family Tree in App',
+      };
+    }
+    if (isAlbum) {
+      return {
+        badge: 'Photo Album',
+        titleFallback: 'Family Photo Album',
+        captionFallback:
+          'A curated collection of cherished family memories and photographs preserved with love on My Loving Day.',
+        headline: (
+          <>
+            Cherished Photo Album <br />
+            <span style={{ color: '#024BA4', fontWeight: 800 }}>
+              Preserved With Love.
+            </span>
+          </>
+        ),
+        subtitle:
+          'Browse high-resolution photo memories, special milestones, and preserved legacy albums inside the My Loving Day app.',
+        actionLabel: 'Open Photo Album in App',
+      };
+    }
+    if (isAngelVideo) {
+      return {
+        badge: 'Angel Video',
+        titleFallback: 'Angel Video Memory',
+        captionFallback:
+          'A heartfelt angel video message preserved forever with love on My Loving Day.',
+        headline: (
+          <>
+            Heartfelt Angel Video <br />
+            <span style={{ color: '#024BA4', fontWeight: 800 }}>
+              Preserved With Love.
+            </span>
+          </>
+        ),
+        subtitle:
+          'Watch meaningful video messages, heartfelt voices, and timeless recordings kept safe for your family.',
+        actionLabel: 'Watch Video in App',
+      };
+    }
+    return {
+      badge: 'Memory',
+      titleFallback: 'Cherished Family Memory',
+      captionFallback:
+        'A special memory preserved with love on My Loving Day. Kept secure for future generations.',
+      headline: (
+        <>
+          Where Every Memory <br />
+          <span style={{ color: '#024BA4', fontWeight: 800 }}>
+            Finds a Safe Home.
+          </span>
+        </>
+      ),
+      subtitle:
+        'View full photo albums, listen to heartfelt voice notes, and keep your family connections alive forever with our encrypted legacy platform.',
+      actionLabel: 'Open in My Loving Day',
+    };
+  }, [isFamily, isAlbum, isAngelVideo]);
+
+  // Fallback values
   const title =
-    rawTitle || (isDemo ? 'Cherished Family Memory' : 'Post Not Found');
+    rawTitle ||
+    (isDemo
+      ? typeMeta.titleFallback
+      : isNotFound
+      ? 'Post Not Found'
+      : typeMeta.titleFallback);
+
   const caption =
     rawCaption ||
     (isDemo
-      ? 'A special memory preserved with love on My Loving Day. Kept secure for future generations.'
-      : 'This memory could not be found.');
+      ? typeMeta.captionFallback
+      : '');
+
   const image =
     rawImage ||
     (isDemo
@@ -104,23 +230,20 @@ export default function PostDetailView() {
   const queryStr = dParam ? `?d=${encodeURIComponent(dParam)}` : '';
   const appDeepLink = `lovingday://posts/${id || '1'}${queryStr}`;
   const playStoreLink =
-    'https://play.google.com/store/apps/details?id=com.cts.lovingday';
+    'https://play.google.com/';
   const appStoreLink = 'https://apps.apple.com';
 
   const handleOpenApp = () => {
     setIsModalOpen(true);
   };
 
-  const handleLaunchDeepLink = () => {
-    window.location.href = appDeepLink;
-  };
-
   return (
     <div
+      className="post-detail-page-wrapper"
       style={{
         backgroundColor: '#F8FAFC',
         minHeight: '100vh',
-        paddingTop: '180px',
+        paddingTop: '240px',
         paddingBottom: '90px',
         position: 'relative',
         overflow: 'hidden',
@@ -193,6 +316,7 @@ export default function PostDetailView() {
             />
 
             <div
+              className="iphone-mockup-wrapper"
               style={{
                 position: 'relative',
                 width: '100%',
@@ -296,7 +420,9 @@ export default function PostDetailView() {
                       borderRadius: '9999px',
                     }}
                   >
-                    {isNotFound ? 'Not Found' : 'Memory'}
+                    <span>
+                      {isNotFound ? 'Not Found' : typeMeta.badge}
+                    </span>
                   </div>
                 </div>
 
@@ -444,21 +570,22 @@ export default function PostDetailView() {
                             gap: '4px',
                           }}
                         >
-                          <ShieldCheck size={11} color="#024BA4" /> Preserved Memory
+                          <ShieldCheck size={11} color="#024BA4" /> Preserved {typeMeta.badge}
                         </span>
                       </div>
                     </div>
 
-                    {/* Memory Image (i) */}
-                    {image && (
+                    {/* Memory Visual / Image or Placeholder */}
+                    {image ? (
                       <div
                         style={{
-                          borderRadius: '12px',
+                          borderRadius: '14px',
                           overflow: 'hidden',
                           backgroundColor: '#F1F5F9',
                           marginBottom: '10px',
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)',
                           maxHeight: '230px',
+                          position: 'relative',
                         }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -473,8 +600,436 @@ export default function PostDetailView() {
                             display: 'block',
                           }}
                         />
+                        {isAngelVideo && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '50%',
+                              left: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              width: '48px',
+                              height: '48px',
+                              borderRadius: '50%',
+                              backgroundColor: 'rgba(2, 75, 164, 0.9)',
+                              backdropFilter: 'blur(4px)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: '0 6px 18px rgba(0, 0, 0, 0.35)',
+                            }}
+                          >
+                            <Play
+                              size={20}
+                              color="#FFFFFF"
+                              fill="#FFFFFF"
+                              style={{ marginLeft: '2px' }}
+                            />
+                          </div>
+                        )}
                       </div>
-                    )}
+                    ) : isFamily ? (
+                      /* ============================================================ */
+                      /* FAMILY TREE PLACEHOLDER (When image is not provided) */
+                      /* ============================================================ */
+                      <div
+                        onClick={handleOpenApp}
+                        style={{
+                          borderRadius: '16px',
+                          background:
+                            'linear-gradient(145deg, #F0F7FF 0%, #E0F0FE 60%, #DBEAFE 100%)',
+                          border: '1.5px solid #BFDBFE',
+                          padding: '16px 14px 12px 14px',
+                          marginBottom: '12px',
+                          boxShadow: '0 6px 16px rgba(2, 75, 164, 0.08)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          position: 'relative',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {/* Ambient soft glow */}
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '-20%',
+                            right: '-20%',
+                            width: '120px',
+                            height: '120px',
+                            borderRadius: '50%',
+                            background:
+                              'radial-gradient(circle, rgba(0, 210, 255, 0.25) 0%, transparent 70%)',
+                            pointerEvents: 'none',
+                          }}
+                        />
+
+                        {/* Tree Nodes Graphic */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            width: '100%',
+                            marginBottom: '10px',
+                          }}
+                        >
+                          {/* Root Node: Parents / Head */}
+                          <div
+                            style={{
+                              width: '42px',
+                              height: '42px',
+                              borderRadius: '50%',
+                              backgroundColor: '#024BA4',
+                              border: '2.5px solid #FFFFFF',
+                              boxShadow: '0 4px 12px rgba(2, 75, 164, 0.3)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              zIndex: 2,
+                            }}
+                          >
+                            <Users size={20} color="#FFFFFF" />
+                          </div>
+
+                          {/* Connecting Tree Branch SVG */}
+                          <svg
+                            width="150"
+                            height="28"
+                            viewBox="0 0 150 28"
+                            fill="none"
+                            style={{ margin: '-2px 0' }}
+                          >
+                            <line
+                              x1="75"
+                              y1="0"
+                              x2="75"
+                              y2="12"
+                              stroke="#93C5FD"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="M 30 26 C 30 14, 75 14, 75 14 C 75 14, 120 14, 120 26"
+                              stroke="#93C5FD"
+                              strokeWidth="2.5"
+                              fill="none"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+
+                          {/* Child Nodes */}
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              width: '140px',
+                              zIndex: 2,
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: '34px',
+                                height: '34px',
+                                borderRadius: '50%',
+                                backgroundColor: '#0284C7',
+                                border: '2px solid #FFFFFF',
+                                boxShadow: '0 3px 10px rgba(2, 132, 199, 0.25)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Heart size={15} color="#FFFFFF" fill="#FFFFFF" />
+                            </div>
+                            <div
+                              style={{
+                                width: '34px',
+                                height: '34px',
+                                borderRadius: '50%',
+                                backgroundColor: '#F59E0B',
+                                border: '2px solid #FFFFFF',
+                                boxShadow: '0 3px 10px rgba(245, 158, 11, 0.25)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <User size={15} color="#FFFFFF" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Badge & Caption inside placeholder */}
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            backgroundColor: '#FFFFFF',
+                            padding: '3px 10px',
+                            borderRadius: '9999px',
+                            border: '1px solid #BFDBFE',
+                            boxShadow: '0 2px 6px rgba(2, 75, 164, 0.08)',
+                            marginBottom: '3px',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              color: '#024BA4',
+                              letterSpacing: '0.2px',
+                            }}
+                          >
+                            Interactive Family Tree
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            color: '#64748B',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Tap to explore full lineage in app
+                        </span>
+                      </div>
+                    ) : isAlbum ? (
+                      /* ============================================================ */
+                      /* PHOTO ALBUM PLACEHOLDER (When image is not provided) */
+                      /* ============================================================ */
+                      <div
+                        onClick={handleOpenApp}
+                        style={{
+                          borderRadius: '16px',
+                          background:
+                            'linear-gradient(145deg, #F8FAFC 0%, #EFF6FF 50%, #E0F2FE 100%)',
+                          border: '1.5px solid #E2E8F0',
+                          padding: '18px 14px 12px 14px',
+                          marginBottom: '12px',
+                          boxShadow: '0 6px 16px rgba(0, 0, 0, 0.04)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          position: 'relative',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {/* Stacked Polaroid Effect */}
+                        <div
+                          style={{
+                            position: 'relative',
+                            width: '110px',
+                            height: '76px',
+                            marginBottom: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {/* Back Left Card */}
+                          <div
+                            style={{
+                              position: 'absolute',
+                              width: '68px',
+                              height: '62px',
+                              borderRadius: '10px',
+                              backgroundColor: '#FFFFFF',
+                              border: '2px solid #E2E8F0',
+                              transform: 'rotate(-9deg) translateX(-14px)',
+                              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.07)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: '46px',
+                                height: '38px',
+                                borderRadius: '6px',
+                                backgroundColor: '#F1F5F9',
+                              }}
+                            />
+                          </div>
+
+                          {/* Back Right Card */}
+                          <div
+                            style={{
+                              position: 'absolute',
+                              width: '68px',
+                              height: '62px',
+                              borderRadius: '10px',
+                              backgroundColor: '#FFFFFF',
+                              border: '2px solid #E2E8F0',
+                              transform: 'rotate(8deg) translateX(14px)',
+                              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.07)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: '46px',
+                                height: '38px',
+                                borderRadius: '6px',
+                                backgroundColor: '#F8FAFC',
+                              }}
+                            />
+                          </div>
+
+                          {/* Center Front Card */}
+                          <div
+                            style={{
+                              position: 'relative',
+                              width: '74px',
+                              height: '68px',
+                              borderRadius: '12px',
+                              background:
+                                'linear-gradient(135deg, #024BA4 0%, #00D2FF 100%)',
+                              border: '2.5px solid #FFFFFF',
+                              boxShadow: '0 8px 20px rgba(2, 75, 164, 0.28)',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              zIndex: 3,
+                            }}
+                          >
+                            <ImageIcon size={26} color="#FFFFFF" />
+                            <span
+                              style={{
+                                fontSize: '8.5px',
+                                fontWeight: 800,
+                                color: '#FFFFFF',
+                                marginTop: '2px',
+                                letterSpacing: '0.4px',
+                              }}
+                            >
+                              ALBUM
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Badge & Subtitle */}
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            backgroundColor: '#FFFFFF',
+                            padding: '3px 10px',
+                            borderRadius: '9999px',
+                            border: '1px solid #CBD5E1',
+                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
+                            marginBottom: '3px',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              color: '#024BA4',
+                              letterSpacing: '0.2px',
+                            }}
+                          >
+                            Curated Photo Album
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            color: '#64748B',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Tap to browse all photos in app
+                        </span>
+                      </div>
+                    ) : isAngelVideo ? (
+                      /* ============================================================ */
+                      /* ANGEL VIDEO PLACEHOLDER (When image is not provided) */
+                      /* ============================================================ */
+                      <div
+                        onClick={handleOpenApp}
+                        style={{
+                          borderRadius: '16px',
+                          background:
+                            'linear-gradient(145deg, #0F172A 0%, #1E293B 100%)',
+                          border: '1.5px solid #334155',
+                          padding: '24px 14px 16px 14px',
+                          marginBottom: '12px',
+                          boxShadow: '0 8px 22px rgba(15, 23, 42, 0.3)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          position: 'relative',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '54px',
+                            height: '54px',
+                            borderRadius: '50%',
+                            backgroundColor: '#024BA4',
+                            border: '2px solid rgba(255, 255, 255, 0.4)',
+                            boxShadow: '0 6px 20px rgba(2, 75, 164, 0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '10px',
+                          }}
+                        >
+                          <Play
+                            size={22}
+                            color="#FFFFFF"
+                            fill="#FFFFFF"
+                            style={{ marginLeft: '2px' }}
+                          />
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            padding: '3px 10px',
+                            borderRadius: '9999px',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            marginBottom: '4px',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              color: '#38BDF8',
+                              letterSpacing: '0.2px',
+                            }}
+                          >
+                            Angel Video Memory
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            color: '#94A3B8',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Tap to play video in app
+                        </span>
+                      </div>
+                    ) : null}
 
                     {/* Post Action Icons */}
                     <div
@@ -558,7 +1113,9 @@ export default function PostDetailView() {
                       transition: 'all 0.25s ease',
                     }}
                   >
-                    <span>Open in My Loving Day</span>
+                    <span>
+                      {isNotFound ? 'Open in My Loving Day' : typeMeta.actionLabel}
+                    </span>
                     <ExternalLink size={14} />
                   </button>
 
@@ -598,6 +1155,7 @@ export default function PostDetailView() {
           {/* RIGHT COLUMN: Rich, Balanced Brand & Download Showcase */}
           {/* ============================================================ */}
           <div
+            className="post-right-column"
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -607,7 +1165,10 @@ export default function PostDetailView() {
             }}
           >
             {/* Top Brand Header Row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div
+              className="brand-header-row"
+              style={{ display: 'flex', alignItems: 'center', gap: '16px' }}
+            >
               <Link href="/">
                 <div
                   style={{
@@ -693,6 +1254,7 @@ export default function PostDetailView() {
                 </div>
 
                 <h1
+                  className="post-main-title"
                   style={{
                     fontSize: '40px',
                     fontWeight: 800,
@@ -745,7 +1307,25 @@ export default function PostDetailView() {
               </div>
             ) : (
               <div>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '5px 12px',
+                    borderRadius: '9999px',
+                    backgroundColor: 'rgba(2, 75, 164, 0.08)',
+                    color: '#024BA4',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    marginBottom: '14px',
+                  }}
+                >
+                  <span>{typeMeta.badge}</span>
+                </div>
+
                 <h1
+                  className="post-main-title"
                   style={{
                     fontSize: '40px',
                     fontWeight: 800,
@@ -755,10 +1335,7 @@ export default function PostDetailView() {
                     margin: '0 0 12px 0',
                   }}
                 >
-                  Where Every Memory <br />
-                  <span style={{ color: '#024BA4', fontWeight: 800 }}>
-                    Finds a Safe Home.
-                  </span>
+                  {typeMeta.headline}
                 </h1>
                 <p
                   style={{
@@ -769,15 +1346,14 @@ export default function PostDetailView() {
                     maxWidth: '520px',
                   }}
                 >
-                  View full photo albums, listen to heartfelt voice notes, and keep
-                  your family connections alive forever with our encrypted legacy
-                  platform.
+                  {typeMeta.subtitle}
                 </p>
               </div>
             )}
 
             {/* Download Buttons Section */}
             <div
+              className="download-card-wrapper"
               style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: '20px',
@@ -801,6 +1377,7 @@ export default function PostDetailView() {
               </div>
 
               <div
+                className="download-buttons-row"
                 style={{
                   display: 'flex',
                   gap: '14px',
@@ -1018,7 +1595,7 @@ export default function PostDetailView() {
                 marginBottom: '8px',
               }}
             >
-              Open in My Loving Day
+              Download My Loving Day
             </h3>
 
             <p
@@ -1029,60 +1606,9 @@ export default function PostDetailView() {
                 marginBottom: '22px',
               }}
             >
-              View this shared post and preserve your legacy memories safely inside
-              the mobile app.
+              Download the official app to view full memories and keep your family
+              connections alive forever.
             </p>
-
-            {/* Direct Open in App Button */}
-            <button
-              onClick={handleLaunchDeepLink}
-              style={{
-                width: '100%',
-                backgroundColor: '#024BA4',
-                color: '#FFFFFF',
-                padding: '13px 20px',
-                borderRadius: '14px',
-                fontSize: '15px',
-                fontWeight: 800,
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 6px 18px rgba(2, 75, 164, 0.25)',
-                marginBottom: '16px',
-                transition: 'all 0.2s ease',
-              }}
-              className="open-app-launch-btn"
-            >
-              <span>Launch Installed App</span>
-              <ExternalLink size={16} />
-            </button>
-
-            {/* Divider */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                margin: '18px 0',
-              }}
-            >
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#E2E8F0' }} />
-              <span
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: '#94A3B8',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                }}
-              >
-                Or Download App
-              </span>
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#E2E8F0' }} />
-            </div>
 
             {/* Store Buttons inside Modal */}
             <div
@@ -1210,11 +1736,23 @@ export default function PostDetailView() {
       )}
 
       <style jsx>{`
+        .post-detail-page-wrapper {
+          padding-top: 240px;
+          padding-bottom: 90px;
+        }
         .post-rich-layout {
           display: grid;
           grid-template-columns: minmax(310px, 360px) 1.2fr;
           gap: 60px;
           align-items: center;
+        }
+        .iphone-mockup-wrapper {
+          position: relative;
+          width: 100%;
+          max-width: 350px;
+          aspect-ratio: 388 / 800;
+          filter: drop-shadow(0 25px 50px rgba(2, 75, 164, 0.25)) drop-shadow(0 15px 30px rgba(0, 0, 0, 0.18));
+          z-index: 1;
         }
         @keyframes modalSlideUp {
           from {
@@ -1240,10 +1778,6 @@ export default function PostDetailView() {
           background-color: #1e293b !important;
           box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22) !important;
         }
-        .open-app-launch-btn:hover {
-          background-color: #013b82 !important;
-          transform: translateY(-2px);
-        }
         .store-action-btn:hover {
           transform: translateY(-2px);
           background-color: #1e293b !important;
@@ -1254,9 +1788,51 @@ export default function PostDetailView() {
           box-shadow: 0 10px 24px rgba(2, 75, 164, 0.35) !important;
         }
         @media (max-width: 991px) {
+          .post-detail-page-wrapper {
+            padding-top: 135px !important;
+            padding-bottom: 60px !important;
+          }
           .post-rich-layout {
             grid-template-columns: 1fr;
             gap: 40px;
+            max-width: 540px;
+            margin: 0 auto;
+          }
+          .iphone-mockup-wrapper {
+            max-width: 320px !important;
+          }
+          .post-right-column {
+            padding-left: 0 !important;
+            align-items: center !important;
+            text-align: center !important;
+          }
+          .brand-header-row {
+            justify-content: center !important;
+          }
+          .post-main-title {
+            font-size: 32px !important;
+          }
+          .download-card-wrapper {
+            margin: 0 auto !important;
+            width: 100% !important;
+          }
+          .download-buttons-row {
+            justify-content: center !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .post-detail-page-wrapper {
+            padding-top: 115px !important;
+            padding-bottom: 40px !important;
+          }
+          .iphone-mockup-wrapper {
+            max-width: 290px !important;
+          }
+          .post-main-title {
+            font-size: 26px !important;
+          }
+          .download-badge-btn {
+            padding: 8px 16px !important;
           }
         }
       `}</style>
