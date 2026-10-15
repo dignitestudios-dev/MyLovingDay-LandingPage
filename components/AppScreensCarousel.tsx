@@ -5,16 +5,16 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ScrollReveal from './ScrollReveal';
 
 const screens = [
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-1-1-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-2-1-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-3-1-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-4-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-5-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-6-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-7-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-8-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-9-466x1024.png',
-  'https://mylovingday.com/wp-content/uploads/2025/01/screens-10-466x1024.png',
+  '/images/1.png',
+  '/images/2.png',
+  '/images/3.png',
+  '/images/4.png',
+  '/images/5.png',
+  '/images/6.png',
+  '/images/7.png',
+  '/images/8.png',
+  '/images/9.png',
+  '/images/10.png',
 ];
 
 export default function AppScreensCarousel() {
