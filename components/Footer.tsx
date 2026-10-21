@@ -98,6 +98,9 @@ export default function Footer() {
             <Link href="/terms-condition" className="footer-link">
               Terms &amp; Conditions
             </Link>
+            <Link href="/child-safety" className="footer-link">
+              Child Safety
+            </Link>
           </div>
         </div>
       </div>

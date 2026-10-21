@@ -114,11 +114,11 @@ export default function Header() {
             flex: 1,
             display: 'flex',
             justifyContent: 'flex-start',
-            gap: '40px',
+            gap: '28px',
             alignItems: 'center',
             paddingTop: '30px',
             paddingBottom: '20px',
-            paddingLeft: '48px',
+            paddingLeft: '36px',
           }}
         >
           <a
@@ -155,7 +155,19 @@ export default function Header() {
               transition: 'all 0.2s ease',
             }}
           >
-            Privacy & Policy
+            Privacy Policy
+          </Link>
+          <Link
+            href="/child-safety"
+            className="nav-link"
+            style={{
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '18px',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Child Safety
           </Link>
         </nav>
 
@@ -272,9 +284,22 @@ export default function Header() {
               fontWeight: 800,
               fontSize: '18px',
               padding: '8px 0',
+              borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}
           >
             Privacy & Policy
+          </Link>
+          <Link
+            href="/child-safety"
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              color: '#ffffff',
+              fontWeight: 800,
+              fontSize: '18px',
+              padding: '8px 0',
+            }}
+          >
+            Child Safety
           </Link>
         </div>
       )}
