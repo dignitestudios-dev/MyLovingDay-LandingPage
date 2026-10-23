@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Manrope } from 'next/font/google';
+import { Manrope, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,6 +8,15 @@ import ScrollToTop from '@/components/ScrollToTop';
 const manrope = Manrope({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
   display: 'swap',
 });
 
@@ -28,6 +37,8 @@ export const metadata: Metadata = {
   },
 };
 
+import CustomCursor from '@/components/CustomCursor';
+
 export default function RootLayout({
   children,
 }: {
@@ -35,7 +46,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={manrope.className}>
+      <body className={`${manrope.variable} ${playfair.variable} ${manrope.className}`}>
+        <CustomCursor />
         <Header />
         <main>{children}</main>
         <Footer />

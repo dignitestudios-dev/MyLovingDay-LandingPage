@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
-import ScrollReveal from './ScrollReveal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Quote, Sparkles, CheckCircle2 } from 'lucide-react';
 
 const testimonials = [
   {
     quote:
       'Did you hear? This app can notify your friends if you go off the grid for months !',
     name: 'Noah Liam',
+    handle: '@noah_liam',
     avatar:
       'https://mylovingday.com/wp-content/uploads/elementor/thumbs/account-1-r028d1z5nsxcw36pvs7jofox1fer0tcb9qxuz4cqbg.png',
   },
@@ -16,6 +17,7 @@ const testimonials = [
     quote:
       'I heard the app sends a loving nudge to your friends if they haven’t been active – like a digital guardian angel !',
     name: 'Olivia Oliver',
+    handle: '@olivia_o',
     avatar:
       'https://mylovingday.com/wp-content/uploads/elementor/thumbs/account-1-r028d1z5nsxcw36pvs7jofox1fer0tcb9qxuz4cqbg.png',
   },
@@ -23,6 +25,7 @@ const testimonials = [
     quote:
       'Word is, you can choose exactly who gets your memories and when – it’s like creating your own legacy timeline!',
     name: 'Flyn',
+    handle: '@flyn_legacy',
     avatar:
       'https://mylovingday.com/wp-content/uploads/elementor/thumbs/account-1-r028d1z5nsxcw36pvs7jofox1fer0tcb9qxuz4cqbg.png',
   },
@@ -30,6 +33,7 @@ const testimonials = [
     quote:
       'I have listened that you can record your voice with a photo OMG !! That’s great',
     name: 'Charle',
+    handle: '@charle_voice',
     avatar:
       'https://mylovingday.com/wp-content/uploads/elementor/thumbs/account-1-r028d1z5nsxcw36pvs7jofox1fer0tcb9qxuz4cqbg.png',
   },
@@ -49,29 +53,43 @@ export default function TestimonialsCarousel() {
   return (
     <section
       style={{
-        backgroundColor: '#ffffff',
-        paddingTop: '90px',
-        paddingBottom: '100px',
+        backgroundColor: '#FFFFFF',
+        paddingTop: '110px',
+        paddingBottom: '120px',
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
       <div className="container-custom">
         <div className="testimonials-row-layout">
           {/* Left Column: Heading & Text */}
-          <ScrollReveal delay={100} className="test-left-col">
+          <motion.div
+            className="test-left-col"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          >
             <span
               style={{
                 color: '#024BA4',
-                fontSize: '18px',
-                fontWeight: 900,
+                fontSize: '13.5px',
+                fontWeight: 800,
                 textTransform: 'uppercase',
-                display: 'block',
-                marginBottom: '10px',
-                letterSpacing: '1px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '14px',
+                letterSpacing: '1.5px',
+                background: 'rgba(2, 75, 164, 0.08)',
+                padding: '6px 18px',
+                borderRadius: '9999px',
               }}
             >
-              WHO BELIEVED IN US
+              <Sparkles size={14} color="#024BA4" />
+              Who Believed In Us
             </span>
+
             <h2
               className="test-title"
               style={{
@@ -79,17 +97,23 @@ export default function TestimonialsCarousel() {
                 fontWeight: 900,
                 textTransform: 'uppercase',
                 color: '#000000',
-                lineHeight: 1.15,
+                lineHeight: 1.1,
                 marginBottom: '18px',
+                letterSpacing: '-0.02em',
               }}
             >
-              Whispers of Innovation
+              Whispers of <br />
+              <span className="serif-accent" style={{ color: '#0254B8' }}>
+                innovation
+              </span>
             </h2>
+
             <p
               style={{
                 fontSize: '16px',
-                color: '#334155',
+                color: '#475569',
                 lineHeight: 1.75,
+                maxWidth: '420px',
               }}
             >
               The app’s unique features, like check-up notifications and memories
@@ -97,129 +121,94 @@ export default function TestimonialsCarousel() {
               lasting legacies.
             </p>
 
-            {/* Arrows below description */}
+            {/* Navigation Arrows */}
             <div
               style={{
                 display: 'flex',
-                gap: '12px',
-                marginTop: '32px',
+                gap: '14px',
+                marginTop: '36px',
               }}
             >
               <button
                 onClick={prevSlide}
                 aria-label="Previous Testimonial"
+                className="test-arrow-btn"
                 style={{
-                  backgroundColor: '#ffffff',
-                  border: '2px solid #0254B8',
+                  backgroundColor: '#FFFFFF',
+                  border: '1.5px solid rgba(2, 75, 164, 0.25)',
                   borderRadius: '50%',
-                  width: '46px',
-                  height: '46px',
+                  width: '50px',
+                  height: '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   transition: 'all 0.25s ease',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(2, 75, 164, 0.1)',
+                  boxShadow: '0 4px 14px rgba(2, 75, 164, 0.08)',
                 }}
-                className="arrow-btn"
               >
                 <ChevronLeft size={22} color="#0254B8" />
               </button>
+
               <button
                 onClick={nextSlide}
                 aria-label="Next Testimonial"
+                className="test-arrow-btn primary"
                 style={{
-                  backgroundColor: '#0254B8',
-                  border: '2px solid #0254B8',
+                  backgroundColor: '#024BA4',
+                  border: '1.5px solid #024BA4',
                   borderRadius: '50%',
-                  width: '46px',
-                  height: '46px',
+                  width: '50px',
+                  height: '50px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   transition: 'all 0.25s ease',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(2, 75, 164, 0.25)',
+                  boxShadow: '0 8px 20px rgba(2, 75, 164, 0.3)',
                 }}
-                className="arrow-btn"
               >
-                <ChevronRight size={22} color="#ffffff" />
+                <ChevronRight size={22} color="#FFFFFF" />
               </button>
             </div>
-          </ScrollReveal>
+          </motion.div>
 
-          {/* Right Area: 3 Cards Row */}
+          {/* Right Area: 3 Cards Row (Finix 00:24 - 00:26 style) */}
           <div className="test-cards-col">
             <div className="test-grid">
               {[0, 1, 2].map((offset) => {
                 const item =
                   testimonials[(startIndex + offset) % testimonials.length];
                 return (
-                  <ScrollReveal key={offset} delay={150 + offset * 120}>
-                    <div className="test-card">
-                      {/* Card box */}
-                      <div
-                        style={{
-                          border: '2px solid #0254B8',
-                          borderRadius: '12px',
-                          backgroundColor: '#F6F9FE',
-                          padding: '24px 20px',
-                          marginBottom: '16px',
-                          minHeight: '185px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          position: 'relative',
-                          overflow: 'hidden',
-                          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.06)',
-                          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                        }}
-                        className="quote-box"
-                      >
-                        <Quote
-                          size={40}
-                          color="rgba(2, 75, 164, 0.08)"
-                          style={{
-                            position: 'absolute',
-                            right: '12px',
-                            top: '12px',
-                            pointerEvents: 'none',
-                          }}
-                        />
-
-                        <p
-                          style={{
-                            fontSize: '16px',
-                            color: '#000000',
-                            lineHeight: 1.55,
-                            fontWeight: 500,
-                            position: 'relative',
-                            zIndex: 1,
-                          }}
-                        >
-                          {item.quote}
-                        </p>
-                        <div style={{ marginTop: '16px', position: 'relative', zIndex: 1 }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src="https://mylovingday.com/wp-content/uploads/2025/01/stars.png"
-                            alt="5 Stars"
-                            style={{
-                              width: '115px',
-                              height: 'auto',
-                              display: 'block',
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Author Info */}
+                  <motion.div
+                    key={`${item.name}-${offset}`}
+                    initial={{ opacity: 0, y: 25 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: offset * 0.12, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                    className="test-card-box"
+                    style={{
+                      borderRadius: '24px',
+                      backgroundColor: '#F8FAFC',
+                      border: '1px solid rgba(226, 232, 240, 0.9)',
+                      padding: '30px 24px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      position: 'relative',
+                      minHeight: '290px',
+                      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.03)',
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    <div>
+                      {/* Top User Info */}
                       <div
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: '14px',
-                          paddingLeft: '6px',
+                          marginBottom: '20px',
                         }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -227,25 +216,62 @@ export default function TestimonialsCarousel() {
                           src={item.avatar}
                           alt={item.name}
                           style={{
-                            width: '50px',
-                            height: '50px',
+                            width: '48px',
+                            height: '48px',
                             borderRadius: '50%',
                             objectFit: 'cover',
                             border: '2px solid #0254B8',
                           }}
                         />
-                        <h4
-                          style={{
-                            fontSize: '20px',
-                            fontWeight: 800,
-                            color: '#000000',
-                          }}
-                        >
-                          {item.name}
-                        </h4>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <h4
+                              style={{
+                                fontSize: '18px',
+                                fontWeight: 800,
+                                color: '#0F172A',
+                              }}
+                            >
+                              {item.name}
+                            </h4>
+                            <CheckCircle2 size={15} color="#0254B8" fill="#E0F2FE" />
+                          </div>
+                          <span style={{ fontSize: '13px', color: '#94A3B8' }}>{item.handle}</span>
+                        </div>
                       </div>
+
+                      {/* Quote Text */}
+                      <p
+                        style={{
+                          fontSize: '15.5px',
+                          color: '#334155',
+                          lineHeight: 1.65,
+                          fontWeight: 500,
+                          marginBottom: '24px',
+                        }}
+                      >
+                        &ldquo;{item.quote}&rdquo;
+                      </p>
                     </div>
-                  </ScrollReveal>
+
+                    {/* Bottom 5 Stars Image */}
+                    <div>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/images/stars.png"
+                        alt="5 Stars"
+                        style={{
+                          width: '100px',
+                          height: 'auto',
+                          display: 'block',
+                        }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            'https://mylovingday.com/wp-content/uploads/2025/01/stars.png';
+                        }}
+                      />
+                    </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -256,8 +282,8 @@ export default function TestimonialsCarousel() {
       <style jsx>{`
         .testimonials-row-layout {
           display: grid;
-          grid-template-columns: 1fr 2fr;
-          gap: 50px;
+          grid-template-columns: 1fr 2.2fr;
+          gap: 60px;
           align-items: center;
         }
         .test-grid {
@@ -265,16 +291,18 @@ export default function TestimonialsCarousel() {
           grid-template-columns: repeat(3, 1fr);
           gap: 20px;
         }
-        .quote-box:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 14px 28px rgba(2, 75, 164, 0.16) !important;
+        .test-card-box:hover {
+          border-color: rgba(2, 75, 164, 0.3) !important;
+          box-shadow: 0 18px 40px rgba(2, 75, 164, 0.1) !important;
+          background-color: #FFFFFF !important;
         }
-        .arrow-btn:hover {
+        .test-arrow-btn:hover {
           transform: scale(1.08);
         }
-        @media (max-width: 1100px) {
+        @media (max-width: 1150px) {
           .testimonials-row-layout {
             grid-template-columns: 1fr;
+            gap: 36px;
           }
           .test-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -283,15 +311,31 @@ export default function TestimonialsCarousel() {
             display: none;
           }
         }
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+          section {
+            padding-top: 64px !important;
+            padding-bottom: 64px !important;
+          }
+          .test-title {
+            font-size: clamp(28px, 7.5vw, 38px) !important;
+            line-height: 1.15 !important;
+          }
           .test-grid {
             grid-template-columns: 1fr;
+            gap: 16px;
           }
           .test-grid > :nth-child(2) {
             display: none;
           }
+          :global(.test-card-box) {
+            min-height: auto !important;
+            padding: 22px 18px !important;
+            border-radius: 18px !important;
+          }
+        }
+        @media (max-width: 430px) {
           .test-title {
-            font-size: 32px !important;
+            font-size: clamp(26px, 7vw, 30px) !important;
           }
         }
       `}</style>

@@ -1,25 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import ScrollReveal from './ScrollReveal';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 
 const screens = [
-  '/images/1.png',
-  '/images/2.png',
-  '/images/3.png',
-  '/images/4.png',
-  '/images/5.png',
-  '/images/6.png',
-  '/images/7.png',
-  '/images/8.png',
-  '/images/9.png',
-  '/images/10.png',
+  { src: '/images/1.png', label: 'Home Vault' },
+  { src: '/images/2.png', label: 'Inactivity Check' },
+  { src: '/images/3.png', label: 'Journeys & Places' },
+  { src: '/images/4.png', label: 'Memory Albums' },
+  { src: '/images/5.png', label: 'Message Deliveries' },
+  { src: '/images/6.png', label: 'Family Tree' },
+  { src: '/images/7.png', label: 'Voice Recordings' },
+  { src: '/images/8.png', label: 'Photo Moments' },
+  { src: '/images/9.png', label: 'Trusted Circles' },
+  { src: '/images/10.png', label: 'Security & Keys' },
 ];
 
 export default function AppScreensCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(2);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const touchStartX = useRef<number | null>(null);
   const total = screens.length;
 
   const handleNext = () => {
@@ -30,11 +32,36 @@ export default function AppScreensCarousel() {
     setCurrentIndex((prev) => (prev - 1 + total) % total);
   };
 
+  // Touch Swipe handlers
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    if (deltaX > 45) {
+      handlePrev();
+    } else if (deltaX < -45) {
+      handleNext();
+    }
+    touchStartX.current = null;
+  };
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
       handleNext();
-    }, 3800);
+    }, 4200);
     return () => clearInterval(interval);
   }, [isPaused, total]);
 
@@ -42,179 +69,255 @@ export default function AppScreensCarousel() {
     <section
       id="screens"
       style={{
-        backgroundColor: '#F6F9FE',
-        paddingTop: '90px',
-        paddingBottom: '100px',
+        backgroundColor: '#F8FAFC',
+        paddingTop: '110px',
+        paddingBottom: '120px',
         overflow: 'hidden',
         position: 'relative',
       }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
+      {/* Background Soft Glow */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '20%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '700px',
+          height: '400px',
+          background: 'radial-gradient(ellipse, rgba(0, 210, 255, 0.1) 0%, rgba(2, 75, 164, 0.05) 60%, transparent 80%)',
+          filter: 'blur(90px)',
+          pointerEvents: 'none',
+        }}
+      />
+
       <div className="container-custom">
-        {/* Title & Subtitle with ScrollReveal */}
-        <ScrollReveal delay={100}>
-          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <h2
-              className="screens-title"
-              style={{
-                fontSize: '56px',
-                fontWeight: 900,
-                color: '#000000',
-                marginBottom: '10px',
-              }}
-            >
-              Simple &amp; Beautiful Interface
-            </h2>
-            <h5
-              className="screens-sub"
-              style={{
-                fontSize: '32px',
-                fontWeight: 600,
-                color: '#000000',
-                fontStyle: 'italic',
-              }}
-            >
-              “ Carry Your Love Across Time “
-            </h5>
-          </div>
-        </ScrollReveal>
+        {/* Title Header (Finix Style 00:12) */}
+        <motion.div
+          style={{ textAlign: 'center', marginBottom: '48px' }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <span
+            style={{
+              color: '#024BA4',
+              fontSize: '13.5px',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '14px',
+              letterSpacing: '1.5px',
+              background: 'rgba(2, 75, 164, 0.08)',
+              padding: '6px 18px',
+              borderRadius: '9999px',
+            }}
+          >
+            <Sparkles size={14} color="#024BA4" />
+            Visual Experience
+          </span>
 
-        {/* Carousel Container */}
-        <ScrollReveal delay={200}>
-          <div style={{ position: 'relative', width: '100%', padding: '0 10px' }}>
-            {/* Prev Button */}
-            <button
-              onClick={handlePrev}
-              aria-label="Previous Screens"
-              style={{
-                position: 'absolute',
-                left: '-16px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 20,
-                backgroundColor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '50%',
-                width: '48px',
-                height: '48px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 6px 16px rgba(0,0,0,0.12)',
-                transition: 'all 0.25s ease',
-                cursor: 'pointer',
-              }}
-              className="nav-btn"
-            >
-              <ChevronLeft size={26} color="#000000" />
-            </button>
+          <h2
+            className="screens-title"
+            style={{
+              fontSize: '52px',
+              fontWeight: 900,
+              color: '#000000',
+              marginBottom: '10px',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Simple &amp; Beautiful Interface
+          </h2>
 
-            {/* Slider Track */}
-            <div
-              style={{
-                overflow: 'hidden',
-                padding: '24px 0',
-                margin: '0 16px',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '16px',
-                  transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                  transform: `translateX(-${currentIndex * 20.8}%)`,
-                }}
-                className="carousel-track"
-              >
-                {[...screens, ...screens].map((src, i) => (
+          <h5
+            className="serif-accent screens-sub"
+            style={{
+              fontSize: '28px',
+              fontWeight: 500,
+              color: '#0254B8',
+            }}
+          >
+            “ Carry Your Love Across Time “
+          </h5>
+        </motion.div>
+
+        {/* 3D Depth Perspective Carousel Stage with Touch Swipe */}
+        <div
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+          style={{
+            position: 'relative',
+            width: '100%',
+            perspective: '1200px',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Prev Button */}
+          <button
+            onClick={handlePrev}
+            aria-label="Previous Screens"
+            className="carousel-nav-btn prev"
+            style={{
+              position: 'absolute',
+              left: isMobile ? '4px' : '20px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 35,
+              backgroundColor: '#FFFFFF',
+              border: '1px solid rgba(2, 75, 164, 0.15)',
+              borderRadius: '50%',
+              width: isMobile ? '42px' : '52px',
+              height: isMobile ? '42px' : '52px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <ChevronLeft size={isMobile ? 20 : 24} color="#024BA4" />
+          </button>
+
+          {/* Cards Track */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: isMobile ? '420px' : '560px',
+              position: 'relative',
+              width: '100%',
+            }}
+          >
+            {screens.map((screen, idx) => {
+              // Calculate relative distance from currentIndex (-2, -1, 0, 1, 2)
+              let offset = (idx - currentIndex + total) % total;
+              if (offset > total / 2) offset -= total;
+
+              // On mobile show center + 1 peek on each side; on desktop show 2
+              const maxOffset = isMobile ? 1 : 2;
+              const isVisible = Math.abs(offset) <= maxOffset;
+              if (!isVisible) return null;
+
+              const isCenter = offset === 0;
+              const xStep = isMobile ? 130 : 240;
+              const xTranslate = offset * xStep;
+              const rotateY = offset * (isMobile ? -14 : -18);
+              const scale = isCenter ? (isMobile ? 1.02 : 1.05) : isMobile ? 0.8 : 0.85;
+              const opacity = isCenter ? 1 : Math.abs(offset) === 1 ? (isMobile ? 0.6 : 0.7) : 0.35;
+              const zIndex = 20 - Math.abs(offset) * 5;
+
+              return (
+                <motion.div
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  animate={{
+                    x: xTranslate,
+                    scale: scale,
+                    rotateY: rotateY,
+                    opacity: opacity,
+                    zIndex: zIndex,
+                  }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  style={{
+                    position: 'absolute',
+                    cursor: isCenter ? 'default' : 'pointer',
+                    transformStyle: 'preserve-3d',
+                  }}
+                  className="carousel-3d-card"
+                >
                   <div
-                    key={i}
                     style={{
-                      flex: '0 0 calc(20% - 13px)',
-                      minWidth: '170px',
-                      display: 'flex',
-                      justifyContent: 'center',
+                      width: isMobile ? '195px' : '260px',
+                      borderRadius: isMobile ? '26px' : '34px',
+                      padding: isMobile ? '6px' : '10px',
+                      transition: 'all 0.3s ease',
                     }}
-                    className="screen-slide"
                   >
                     <div
                       style={{
-                        background: 'transparent',
-                        transition: 'transform 0.35s ease',
+                        borderRadius: isMobile ? '20px' : '26px',
+                        overflow: 'hidden',
+                        position: 'relative',
+                        filter: 'drop-shadow(0 15px 30px rgba(0,0,0,0.18))',
                       }}
-                      className="screen-frame"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={src}
-                        alt={`App Screen ${i + 1}`}
+                        src={screen.src}
+                        alt={`Screen ${idx + 1}`}
                         style={{
                           width: '100%',
                           height: 'auto',
                           display: 'block',
-                          filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.12))',
                         }}
-                        loading="lazy"
                       />
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Next Button */}
-            <button
-              onClick={handleNext}
-              aria-label="Next Screens"
-              style={{
-                position: 'absolute',
-                right: '-16px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                zIndex: 20,
-                backgroundColor: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '50%',
-                width: '48px',
-                height: '48px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 6px 16px rgba(0,0,0,0.12)',
-                transition: 'all 0.25s ease',
-                cursor: 'pointer',
-              }}
-              className="nav-btn"
-            >
-              <ChevronRight size={26} color="#000000" />
-            </button>
+                </motion.div>
+              );
+            })}
           </div>
-        </ScrollReveal>
 
-        {/* Carousel Progress Dots */}
+          {/* Next Button */}
+          <button
+            onClick={handleNext}
+            aria-label="Next Screens"
+            className="carousel-nav-btn next"
+            style={{
+              position: 'absolute',
+              right: isMobile ? '4px' : '20px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 35,
+              backgroundColor: '#FFFFFF',
+              border: '1px solid rgba(2, 75, 164, 0.15)',
+              borderRadius: '50%',
+              width: isMobile ? '42px' : '52px',
+              height: isMobile ? '42px' : '52px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <ChevronRight size={isMobile ? 20 : 24} color="#024BA4" />
+          </button>
+        </div>
+
+        {/* Carousel Pagination Pills */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'center',
             gap: '8px',
-            marginTop: '20px',
+            marginTop: '28px',
           }}
         >
-          {screens.slice(0, 5).map((_, dotIdx) => {
-            const isActive = currentIndex % 5 === dotIdx;
+          {screens.map((_, dotIdx) => {
+            const isActive = currentIndex === dotIdx;
             return (
               <button
                 key={dotIdx}
                 onClick={() => setCurrentIndex(dotIdx)}
-                aria-label={`Go to slide group ${dotIdx + 1}`}
+                aria-label={`Go to slide ${dotIdx + 1}`}
                 style={{
-                  width: isActive ? '24px' : '8px',
+                  width: isActive ? '28px' : '8px',
                   height: '8px',
                   borderRadius: '9999px',
-                  backgroundColor: isActive ? '#024BA4' : '#cbd5e1',
-                  transition: 'all 0.3s ease',
+                  backgroundColor: isActive ? '#024BA4' : '#CBD5E1',
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                   cursor: 'pointer',
+                  padding: 0,
                 }}
               />
             );
@@ -223,46 +326,32 @@ export default function AppScreensCarousel() {
       </div>
 
       <style jsx>{`
-        .nav-btn:hover {
-          background-color: #0254b8 !important;
-          color: #ffffff !important;
-          transform: translateY(-50%) scale(1.06) !important;
+        .carousel-nav-btn:hover {
+          background-color: #024BA4 !important;
+          transform: translateY(-50%) scale(1.08) !important;
         }
-        .nav-btn:hover :global(svg) {
-          stroke: #ffffff !important;
+        .carousel-nav-btn:hover :global(svg) {
+          stroke: #FFFFFF !important;
         }
-        .screen-frame:hover {
-          transform: translateY(-8px) scale(1.03);
-        }
-        @media (max-width: 1024px) {
-          .carousel-track {
-            transform: translateX(-${currentIndex * 34}%);
-          }
-          .screen-slide {
-            flex: 0 0 calc(33.333% - 12px) !important;
+        @media (max-width: 768px) {
+          section {
+            padding-top: 64px !important;
+            padding-bottom: 64px !important;
           }
           .screens-title {
-            font-size: 42px !important;
+            font-size: clamp(28px, 7.5vw, 38px) !important;
+            line-height: 1.15 !important;
           }
           .screens-sub {
-            font-size: 24px !important;
+            font-size: clamp(17px, 4.5vw, 22px) !important;
+          }
+          .carousel-nav-btn {
+            background-color: rgba(255, 255, 255, 0.95) !important;
           }
         }
-        @media (max-width: 640px) {
-          .carousel-track {
-            transform: translateX(-${currentIndex * 62}%);
-          }
-          .screen-slide {
-            flex: 0 0 calc(60% - 10px) !important;
-          }
+        @media (max-width: 430px) {
           .screens-title {
-            font-size: 32px !important;
-          }
-          .screens-sub {
-            font-size: 20px !important;
-          }
-          .nav-btn {
-            display: none !important;
+            font-size: clamp(26px, 7vw, 30px) !important;
           }
         }
       `}</style>

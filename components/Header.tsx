@@ -1,26 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sparkles } from 'lucide-react';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === '/';
+
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    setIsScrolled(latest > 50);
+  });
 
   return (
     <header
       style={{
-        position: 'absolute',
+        position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         zIndex: 100,
         width: '100%',
-        backgroundColor: isHome ? 'transparent' : '#024BA4',
-        boxShadow: isHome ? 'none' : '0 4px 20px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+        backgroundColor: isScrolled
+          ? 'rgba(255, 255, 255, 0.92)'
+          : isHome
+          ? 'transparent'
+          : '#024BA4',
+        backdropFilter: isScrolled ? 'blur(16px)' : 'none',
+        boxShadow: isScrolled
+          ? '0 10px 30px rgba(0, 0, 0, 0.08)'
+          : isHome
+          ? 'none'
+          : '0 4px 20px rgba(0, 0, 0, 0.1)',
+        borderBottom: isScrolled
+          ? '1px solid rgba(226, 232, 240, 0.8)'
+          : '1px solid transparent',
       }}
     >
       <div
@@ -28,10 +49,11 @@ export default function Header() {
         style={{
           maxWidth: '1440px',
           margin: '0 auto',
-          padding: '0 40px',
+          padding: isScrolled ? '12px 40px' : '',
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           justifyContent: 'space-between',
+          transition: 'padding 0.35s ease',
         }}
       >
         {/* Left Navigation (Desktop) */}
@@ -40,21 +62,18 @@ export default function Header() {
           style={{
             flex: 1,
             display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '40px',
+            justifyContent: 'flex-start',
+            gap: '32px',
             alignItems: 'center',
-            paddingTop: '30px',
-            paddingBottom: '20px',
-            paddingRight: '48px',
           }}
         >
           <a
             href="/#over"
-            className="nav-link"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
             style={{
-              color: '#FFFFFF',
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '15px',
               transition: 'all 0.2s ease',
             }}
           >
@@ -62,11 +81,11 @@ export default function Header() {
           </a>
           <a
             href="/#feature"
-            className="nav-link"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
             style={{
-              color: '#FFFFFF',
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '15px',
               transition: 'all 0.2s ease',
             }}
           >
@@ -74,19 +93,19 @@ export default function Header() {
           </a>
           <Link
             href="/terms-condition"
-            className="nav-link"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
             style={{
-              color: '#FFFFFF',
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '15px',
               transition: 'all 0.2s ease',
             }}
           >
-            Terms & Conditions
+            Terms &amp; Conditions
           </Link>
         </nav>
 
-        {/* Center Logo Emblem - Hanging Badge Card */}
+        {/* Center Logo Emblem */}
         <div
           className="header-logo-wrapper"
           style={{
@@ -96,12 +115,34 @@ export default function Header() {
           }}
         >
           <Link href="/" style={{ display: 'inline-block' }}>
-            <div className="logo-card">
+            <div
+              className={`logo-card ${isScrolled ? 'scrolled' : ''}`}
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: isScrolled ? '12px' : '0 0 16px 16px',
+                padding: isScrolled ? '6px 18px' : '8px 24px 10px 24px',
+                boxShadow: '0px 10px 25px rgba(0, 0, 0, 0.18)',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://mylovingday.com/wp-content/uploads/2025/01/Logo-mn-300x260.png"
+                src="/images/logo-mn.png"
                 alt="My Loving Day"
                 className="header-logo-img"
+                style={{
+                  width: isScrolled ? '75px' : '95px',
+                  height: 'auto',
+                  display: 'block',
+                  transition: 'all 0.3s ease',
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    'https://mylovingday.com/wp-content/uploads/2025/01/Logo-mn-300x260.png';
+                }}
               />
             </div>
           </Link>
@@ -113,45 +154,42 @@ export default function Header() {
           style={{
             flex: 1,
             display: 'flex',
-            justifyContent: 'flex-start',
+            justifyContent: 'flex-end',
             gap: '28px',
             alignItems: 'center',
-            paddingTop: '30px',
-            paddingBottom: '20px',
-            paddingLeft: '36px',
           }}
         >
           <a
-            href="/#faq"
-            className="nav-link"
-            style={{
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '18px',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            FAQ
-          </a>
-          <a
             href="/#screens"
-            className="nav-link"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
             style={{
-              color: '#FFFFFF',
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '15px',
               transition: 'all 0.2s ease',
             }}
           >
             App Screens
           </a>
+          <a
+            href="/#faq"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
+            style={{
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '15px',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            FAQ
+          </a>
           <Link
             href="/privacy-policy"
-            className="nav-link"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
             style={{
-              color: '#FFFFFF',
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '15px',
               transition: 'all 0.2s ease',
             }}
           >
@@ -159,11 +197,11 @@ export default function Header() {
           </Link>
           <Link
             href="/child-safety"
-            className="nav-link"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
             style={{
-              color: '#FFFFFF',
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '15px',
               transition: 'all 0.2s ease',
             }}
           >
@@ -176,24 +214,24 @@ export default function Header() {
           className="mobile-toggle"
           style={{
             display: 'none',
-            paddingTop: '20px',
           }}
         >
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
             style={{
-              color: '#ffffff',
-              padding: '10px',
-              backgroundColor: 'rgba(2, 75, 164, 0.95)',
+              color: isScrolled ? '#024BA4' : '#FFFFFF',
+              padding: '8px',
+              backgroundColor: isScrolled
+                ? 'rgba(2, 75, 164, 0.08)'
+                : 'rgba(255, 255, 255, 0.2)',
               borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
             }}
           >
-            {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
@@ -208,7 +246,6 @@ export default function Header() {
             display: 'flex',
             flexDirection: 'column',
             gap: '16px',
-            marginTop: '8px',
           }}
         >
           <a
@@ -217,7 +254,7 @@ export default function Header() {
             style={{
               color: '#ffffff',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '16px',
               padding: '8px 0',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}
@@ -230,7 +267,7 @@ export default function Header() {
             style={{
               color: '#ffffff',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '16px',
               padding: '8px 0',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}
@@ -243,7 +280,7 @@ export default function Header() {
             style={{
               color: '#ffffff',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '16px',
               padding: '8px 0',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}
@@ -256,7 +293,7 @@ export default function Header() {
             style={{
               color: '#ffffff',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '16px',
               padding: '8px 0',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}
@@ -269,12 +306,12 @@ export default function Header() {
             style={{
               color: '#ffffff',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '16px',
               padding: '8px 0',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}
           >
-            Terms & Conditions
+            Terms &amp; Conditions
           </Link>
           <Link
             href="/privacy-policy"
@@ -282,12 +319,12 @@ export default function Header() {
             style={{
               color: '#ffffff',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '16px',
               padding: '8px 0',
               borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}
           >
-            Privacy & Policy
+            Privacy Policy
           </Link>
           <Link
             href="/child-safety"
@@ -295,7 +332,7 @@ export default function Header() {
             style={{
               color: '#ffffff',
               fontWeight: 800,
-              fontSize: '18px',
+              fontSize: '16px',
               padding: '8px 0',
             }}
           >
@@ -309,49 +346,24 @@ export default function Header() {
           color: #00d2ff !important;
           transform: translateY(-2px);
         }
-        .logo-card {
-          background-color: #ffffff;
-          border-radius: 0 0 16px 16px;
-          padding: 8px 24px 10px 24px;
-          box-shadow: 0px 14px 30px rgba(0, 0, 0, 0.22);
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .nav-link.dark:hover {
+          color: #0254b8 !important;
         }
         .logo-card:hover {
           transform: translateY(2px) scale(1.02);
         }
-        .header-logo-img {
-          width: 105px;
-          height: auto;
-          display: block;
-          transition: all 0.3s ease;
-        }
         @media (max-width: 991px) {
           .header-container {
-            padding: 0 16px !important;
-            align-items: center !important;
-            min-height: 64px;
+            padding: 12px 20px !important;
           }
           .desktop-nav {
             display: none !important;
           }
           .mobile-toggle {
             display: block !important;
-            padding-top: 0 !important;
-          }
-          .header-logo-wrapper {
-            position: relative;
-          }
-          .logo-card {
-            padding: 5px 14px 6px 14px !important;
-            border-radius: 0 0 12px 12px !important;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.16) !important;
           }
           .header-logo-img {
             width: 70px !important;
-            height: auto !important;
           }
         }
       `}</style>

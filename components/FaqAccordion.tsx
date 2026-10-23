@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Minus, HelpCircle } from 'lucide-react';
-import ScrollReveal from './ScrollReveal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Minus, HelpCircle, Sparkles } from 'lucide-react';
 
 const faqs = [
   {
@@ -43,149 +43,173 @@ export default function FaqAccordion() {
     <section
       id="faq"
       style={{
-        backgroundColor: '#ffffff',
-        paddingTop: '90px',
-        paddingBottom: '100px',
+        backgroundColor: '#FFFFFF',
+        paddingTop: '110px',
+        paddingBottom: '120px',
+        position: 'relative',
       }}
     >
-      <div className="container-custom" style={{ maxWidth: '980px' }}>
-        {/* Header with ScrollReveal */}
-        <ScrollReveal delay={100}>
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 16px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(2, 75, 164, 0.08)',
-                color: '#024BA4',
-                fontSize: '13px',
-                fontWeight: 800,
-                textTransform: 'uppercase',
-                letterSpacing: '0.8px',
-                marginBottom: '16px',
-              }}
-            >
-              <HelpCircle size={15} color="#024BA4" />
-              Frequently Asked Questions
-            </div>
-
-            <h2
-              className="faq-title"
-              style={{
-                fontSize: '52px',
-                fontWeight: 900,
-                color: '#000000',
-                marginBottom: '16px',
-              }}
-            >
-              Have Questions? Look Here
-            </h2>
-            <p
-              style={{
-                fontSize: '16px',
-                color: '#334155',
-                lineHeight: 1.75,
-                maxWidth: '820px',
-                margin: '0 auto',
-              }}
-            >
-              Discover how My Loving Day App helps you preserve cherished
-              memories, share heartfelt messages, and create a meaningful legacy.
-              From privacy features to collaborative tools, our FAQ section covers
-              everything you need to know to get started on this heartfelt journey.
-            </p>
+      <div className="container-custom" style={{ maxWidth: '940px' }}>
+        {/* Header (Finix Style) */}
+        <motion.div
+          style={{ textAlign: 'center', marginBottom: '56px' }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 18px',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(2, 75, 164, 0.08)',
+              color: '#024BA4',
+              fontSize: '13.5px',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '1.2px',
+              marginBottom: '16px',
+            }}
+          >
+            <Sparkles size={14} color="#024BA4" />
+            Frequently Asked Questions
           </div>
-        </ScrollReveal>
 
-        {/* Accordion list with ScrollReveal */}
+          <h2
+            className="faq-title"
+            style={{
+              fontSize: '52px',
+              fontWeight: 900,
+              color: '#000000',
+              marginBottom: '16px',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Have Questions? <br />
+            <span className="serif-accent" style={{ color: '#0254B8' }}>
+              look here
+            </span>
+          </h2>
+
+          <p
+            style={{
+              fontSize: '16px',
+              color: '#475569',
+              lineHeight: 1.75,
+              maxWidth: '800px',
+              margin: '0 auto',
+            }}
+          >
+            Discover how My Loving Day App helps you preserve cherished
+            memories, share heartfelt messages, and create a meaningful legacy.
+            From privacy features to collaborative tools, our FAQ section covers
+            everything you need to know to get started on this heartfelt journey.
+          </p>
+        </motion.div>
+
+        {/* Accordion list with Framer Motion Layout Animations */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
-              <ScrollReveal key={idx} delay={150 + idx * 80}>
-                <div
+              <motion.div
+                key={idx}
+                className="faq-card"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.08, duration: 0.5 }}
+                style={{
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  border: isOpen
+                    ? '1.5px solid #0254B8'
+                    : '1px solid rgba(226, 232, 240, 0.9)',
+                  backgroundColor: isOpen ? '#F6F9FE' : '#FFFFFF',
+                  boxShadow: isOpen
+                    ? '0 14px 32px rgba(2, 75, 164, 0.08)'
+                    : '0 2px 8px rgba(0, 0, 0, 0.02)',
+                  transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+                }}
+              >
+                {/* Accordion Trigger */}
+                <button
+                  onClick={() => toggle(idx)}
+                  className="faq-header-btn"
                   style={{
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    border: isOpen ? '1.5px solid #0254B8' : '1px solid #e2e8f0',
-                    backgroundColor: isOpen ? '#ffffff' : '#F6F9FE',
-                    boxShadow: isOpen
-                      ? '0 10px 24px rgba(2, 75, 164, 0.1)'
-                      : 'none',
-                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                    width: '100%',
+                    padding: '24px 30px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    textAlign: 'left',
+                    gap: '20px',
+                    backgroundColor: 'transparent',
+                    cursor: 'pointer',
                   }}
                 >
-                  {/* Header */}
-                  <button
-                    onClick={() => toggle(idx)}
+                  <span
+                    className="faq-question-text"
                     style={{
-                      width: '100%',
-                      padding: '22px 28px',
+                      fontSize: '18px',
+                      fontWeight: 800,
+                      color: isOpen ? '#024BA4' : '#0F172A',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {faq.question}
+                  </span>
+
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="faq-toggle-icon"
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      backgroundColor: isOpen ? '#024BA4' : '#F1F5F9',
+                      color: isOpen ? '#FFFFFF' : '#024BA4',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      textAlign: 'left',
-                      gap: '20px',
-                      backgroundColor: isOpen ? '#F6F9FE' : '#F6F9FE',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s ease',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'background-color 0.3s ease, color 0.3s ease',
                     }}
-                    className="faq-header-btn"
                   >
-                    <span
-                      style={{
-                        fontSize: '17px',
-                        fontWeight: 900,
-                        textTransform: 'uppercase',
-                        color: isOpen ? '#024BA4' : '#000000',
-                        letterSpacing: '0.3px',
-                      }}
-                    >
-                      {faq.question}
-                    </span>
-                    <span
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#0254B8',
-                        flexShrink: 0,
-                        transition: 'transform 0.3s ease',
-                      }}
-                    >
-                      {isOpen ? (
-                        <Minus size={20} strokeWidth={2.5} />
-                      ) : (
-                        <Plus size={20} strokeWidth={2.5} />
-                      )}
-                    </span>
-                  </button>
+                    {isOpen ? <Minus size={18} /> : <Plus size={18} />}
+                  </motion.div>
+                </button>
 
-                  {/* Content */}
+                {/* Animated Drawer Body */}
+                <AnimatePresence initial={false}>
                   {isOpen && (
-                    <div
-                      style={{
-                        padding: '18px 28px 24px 28px',
-                        backgroundColor: '#ffffff',
-                        animation: 'slideUpFade 0.35s ease-out',
-                      }}
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <p
+                      <div
+                        className="faq-answer-body"
                         style={{
+                          padding: '0 30px 26px 30px',
+                          color: '#475569',
                           fontSize: '15.5px',
-                          color: '#334155',
-                          lineHeight: 1.7,
+                          lineHeight: 1.75,
+                          borderTop: '1px solid rgba(2, 75, 164, 0.08)',
+                          paddingTop: '18px',
                         }}
                       >
                         {faq.answer}
-                      </p>
-                    </div>
+                      </div>
+                    </motion.div>
                   )}
-                </div>
-              </ScrollReveal>
+                </AnimatePresence>
+              </motion.div>
             );
           })}
         </div>
@@ -193,11 +217,42 @@ export default function FaqAccordion() {
 
       <style jsx>{`
         .faq-header-btn:hover {
-          background-color: #edf3fd !important;
+          opacity: 0.92;
         }
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+          section {
+            padding-top: 64px !important;
+            padding-bottom: 64px !important;
+          }
           .faq-title {
-            font-size: 34px !important;
+            font-size: clamp(28px, 7.5vw, 38px) !important;
+            line-height: 1.15 !important;
+          }
+          :global(.faq-card) {
+            border-radius: 14px !important;
+          }
+          .faq-header-btn {
+            padding: 16px 16px !important;
+            gap: 12px !important;
+          }
+          .faq-question-text {
+            font-size: 15px !important;
+            line-height: 1.45 !important;
+          }
+          .faq-answer-body {
+            padding: 0 16px 16px 16px !important;
+            padding-top: 14px !important;
+            font-size: 13.5px !important;
+            line-height: 1.6 !important;
+          }
+          :global(.faq-toggle-icon) {
+            width: 30px !important;
+            height: 30px !important;
+          }
+        }
+        @media (max-width: 430px) {
+          .faq-title {
+            font-size: clamp(26px, 7vw, 30px) !important;
           }
         }
       `}</style>

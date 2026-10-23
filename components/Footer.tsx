@@ -7,25 +7,54 @@ export default function Footer() {
   return (
     <footer
       style={{
-        backgroundColor: '#ffffff',
-        borderTop: '2px solid #0254B8',
-        boxShadow: '0px 5px 4px 0px rgba(0, 0, 0, 0.07) inset',
-        padding: '36px 0',
+        backgroundColor: '#FFFFFF',
+        borderTop: '1px solid rgba(2, 84, 184, 0.12)',
+        paddingTop: '60px',
+        paddingBottom: '40px',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      <div className="container-custom">
+      {/* Finix 00:27 - 00:30 Signature Giant Watermark Text */}
+      <div
+        className="footer-watermark"
+        style={{
+          position: 'absolute',
+          bottom: '-20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '14vw',
+          fontWeight: 900,
+          fontFamily: 'var(--font-serif)',
+          fontStyle: 'italic',
+          color: 'rgba(2, 75, 164, 0.035)',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: 0,
+          letterSpacing: '-0.04em',
+        }}
+      >
+        My Loving Day
+      </div>
+
+      <div className="container-custom" style={{ position: 'relative', zIndex: 1 }}>
         <div className="footer-layout">
           {/* Brand Logo */}
           <div className="footer-logo-col">
             <Link href="/">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://mylovingday.com/wp-content/uploads/2025/01/footer-logo.png"
+                src="/images/footer-logo.png"
                 alt="My Loving Day"
                 style={{
-                  width: '260px',
+                  width: '240px',
                   maxWidth: '100%',
                   height: 'auto',
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    'https://mylovingday.com/wp-content/uploads/2025/01/footer-logo.png';
                 }}
               />
             </Link>
@@ -33,7 +62,7 @@ export default function Footer() {
 
           {/* Social Icons */}
           <div className="footer-social-col">
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               {/* Facebook */}
               <a
                 href="https://facebook.com"
@@ -43,8 +72,8 @@ export default function Footer() {
                 className="social-btn"
               >
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 512 512"
                   fill="currentColor"
                 >
@@ -61,8 +90,8 @@ export default function Footer() {
                 className="social-btn"
               >
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 512 512"
                   fill="currentColor"
                 >
@@ -79,8 +108,8 @@ export default function Footer() {
                 className="social-btn"
               >
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 448 512"
                   fill="currentColor"
                 >
@@ -111,7 +140,7 @@ export default function Footer() {
           align-items: center;
           justify-content: space-between;
           flex-wrap: wrap;
-          gap: 24px;
+          gap: 28px;
         }
         .footer-links-col {
           display: flex;
@@ -119,38 +148,64 @@ export default function Footer() {
           align-items: center;
         }
         .footer-link {
-          font-size: 19px;
-          font-weight: 900;
-          color: #000000;
+          font-size: 16px;
+          font-weight: 800;
+          color: #0F172A;
           transition: color 0.2s ease;
         }
         .footer-link:hover {
           color: #0254b8;
         }
         .social-btn {
-          width: 44px;
-          height: 44px;
+          width: 42px;
+          height: 42px;
           border-radius: 50%;
-          background-color: #024ba4;
-          color: #ffffff;
+          background-color: #F1F5F9;
+          color: #024ba4;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: transform 0.2s ease, background-color 0.2s ease;
+          transition: all 0.25s ease;
+          border: 1px solid rgba(2, 75, 164, 0.1);
         }
         .social-btn:hover {
           transform: translateY(-3px);
-          background-color: #0254b8;
+          background-color: #024ba4;
+          color: #ffffff;
+          box-shadow: 0 6px 16px rgba(2, 75, 164, 0.25);
         }
         @media (max-width: 768px) {
+          footer {
+            padding-top: 44px !important;
+            padding-bottom: 30px !important;
+          }
           .footer-layout {
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+          }
+          .footer-logo-col {
+            display: flex;
+            justify-content: center;
+          }
+          .footer-social-col {
+            display: flex;
+            justify-content: center;
           }
           .footer-links-col {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 14px 20px;
+          }
+          .footer-link {
+            font-size: 14.5px;
+          }
+          :global(.footer-watermark) {
+            font-size: clamp(32px, 11vw, 72px) !important;
+            bottom: -5px !important;
           }
         }
       `}</style>
