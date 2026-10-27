@@ -121,6 +121,9 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div className="footer-links-col">
+            <Link href="/community-guidelines" className="footer-link">
+              Community Guidelines
+            </Link>
             <Link href="/privacy-policy" className="footer-link">
               Privacy Policy
             </Link>

@@ -63,7 +63,7 @@ export default function Header() {
             flex: 1,
             display: 'flex',
             justifyContent: 'flex-start',
-            gap: '32px',
+            gap: '24px',
             alignItems: 'center',
           }}
         >
@@ -91,6 +91,18 @@ export default function Header() {
           >
             Features
           </a>
+          <Link
+            href="/community-guidelines"
+            className={`nav-link ${isScrolled ? 'dark' : ''}`}
+            style={{
+              color: isScrolled ? '#0F172A' : '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '15px',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            Guidelines
+          </Link>
           <Link
             href="/terms-condition"
             className={`nav-link ${isScrolled ? 'dark' : ''}`}
@@ -300,6 +312,19 @@ export default function Header() {
           >
             FAQ
           </a>
+          <Link
+            href="/community-guidelines"
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              color: '#ffffff',
+              fontWeight: 800,
+              fontSize: '16px',
+              padding: '8px 0',
+              borderBottom: '1px solid rgba(255,255,255,0.15)',
+            }}
+          >
+            Community Guidelines
+          </Link>
           <Link
             href="/terms-condition"
             onClick={() => setMobileMenuOpen(false)}
